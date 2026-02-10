@@ -1,0 +1,64 @@
+name: nats-cluster
+services:
+  s1:
+    image: nats:2.12.4-scratch
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+    command: "-c /config/server.conf"
+    networks: ["nats"]
+    volumes:
+      - ./config/s1.conf:/config/server.conf
+      - ./config/common.conf:/config/common.conf
+      - ./tmp/s1/:/var/log/
+    deploy:
+      resources:
+        limits:
+          cpus: "3"
+          memory: 4G
+        reservations:
+          cpus: "3"
+          memory: 4G
+    environment:
+      - GOMEMLIMIT=3500MiB
+  s2:
+    image: nats:2.12.4-scratch
+    command: "-c /config/server.conf"
+    networks: ["nats"]
+    depends_on: ["s1"]
+    volumes:
+      - ./config/s2.conf:/config/server.conf
+      - ./config/common.conf:/config/common.conf
+      - ./tmp/s2/:/var/log/
+    deploy:
+      resources:
+        limits:
+          cpus: "3"
+          memory: 4G
+        reservations:
+          cpus: "3"
+          memory: 4G
+    environment:
+      - GOMEMLIMIT=3500MiB
+  s3:
+    image: nats:2.12.4-scratch
+    command: "-c /config/server.conf"
+    networks: ["nats"]
+    depends_on: ["s1"]
+    volumes:
+      - ./config/s3.conf:/config/server.conf
+      - ./config/common.conf:/config/common.conf
+      - ./tmp/s3/:/var/log/
+    deploy:
+      resources:
+        limits:
+          cpus: "3"
+          memory: 4G
+        reservations:
+          cpus: "3"
+          memory: 4G
+    environment:
+      - GOMEMLIMIT=3500MiB
+networks:
+  nats:
+    name: nats
