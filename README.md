@@ -3,6 +3,19 @@ Repo containing test code/scripts to reproduce a NATS JetStream bug in conjuncti
 
 The consumer will fail to ack' every 10th message (with `max_deliver=2`) so that NATS emits an advisory and keeps the dead-lettered message in the worker queue after 2 failed delivery attempts.
 
+## Expected Behavior
+The dead-lettered messages stay in the worker queue and one advisory per dead-lettered message is emitted.
+
+## Actual Behavior
+An arbitrary number of dead-lettered messages is missing, i.e., unavailable in the worker queue.
+
+See [Results](#results).
+
+## Notes
+- This setup uses Docker for hosting the NATS cluster, but the same behavior could be observed in a Kubernetes cluster as well
+- This setup uses in-memory streams, but the same behavior could be observed with file-based persistence (Docker and K8s)
+- When running the <ins>producer without artificial processing time</ins> (i.e., running `nats pub` without `--sleep=500ms`), <ins>no message is lost</ins>
+
 ## NATS Setup
 
 ```
